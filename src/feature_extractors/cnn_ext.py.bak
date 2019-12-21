@@ -4,7 +4,6 @@ from src.feature_extractors.base_ext import BaseExtractor
 from skimage import transform
 
 import torch
-from torch import nn
 import torchvision
 
 class CNNExtractor(BaseExtractor):
@@ -28,7 +27,7 @@ class CNNExtractor(BaseExtractor):
         model = torchvision.models.resnet18(pretrained=True)
         model.eval()
         # remove last fully-connected layer
-        new_classifier = nn.Sequential(*list(model.children())[:-1])
+        new_classifier = nn.Sequential(*list(model.classifier.children())[:-1])
         model.classifier = new_classifier
         return model
 
@@ -68,16 +67,16 @@ if __name__ == '__main__':
     data_path = args['dataset']
     query_num = args['queries']
 
-    print('Loading images...')
+    print 'Loading images...'
     for root, dirs, files in os.walk(data_path, topdown=True):
         imgs = np.array([io.imread(os.path.join(data_path, file_name)) for file_name in files])
 
-    print('Extracting features...')
+    print 'Extracting features...'
     cnn_ext = CNNExtractor()
     preds = np.array([cnn_ext.extract(img) for img in imgs])
 
-    print('Finding similar images...')
-    for _ in range(query_num):
+    print 'Finding similar images...'
+    for _ in xrange(query_num):
         query_idx = np.random.randint(imgs.shape[0])
         query_img = preds[query_idx]
         sims = np.array([query_img.dot(other.T) for other in preds])

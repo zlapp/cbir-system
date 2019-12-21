@@ -1,6 +1,6 @@
 import os
 import argparse
-import pickle as pickle
+import cPickle as pickle
 import src.indexes.mem_index as mem
 import src.parsers.v1image_parser as v1
 import matplotlib.pyplot as plt
@@ -39,16 +39,16 @@ if __name__ == '__main__':
         blacklist = set([])
 
     # create parser
-    print('Setting up parser...')
+    print 'Setting up parser...'
     parser = v1.V1ImageParser()
 
     # create index
-    print('Setting up index...')
+    print 'Setting up index...'
     index = mem.MemoryIndex(parsed_path)
 
 
     # evaluate images
-    print('Evaluating images...')
+    print 'Evaluating images...'
     for root, dirs, files in os.walk(data_path, topdown=True):
         for file_name in files:
             if file_name.endswith(('.jpg', '.png')) and file_name not in blacklist:
@@ -59,13 +59,13 @@ if __name__ == '__main__':
                 results = index.query_index(query_doc, metric, extractor, show_score)
                 results = [x for x in results if x[0] not in blacklist]
                 results = results[:top_k]
-                print('Results for query image: {}'.format(file_name))
+                print 'Results for query image: {}'.format(file_name)
                 if show_score:
                     for result_name, score in results:
-                        print('{} -- {}'.format(result_name, score))
+                        print '{} -- {}'.format(result_name, score)
                 else:
                     for result_name in results:
-                        print('{}'.format(result_name))
+                        print '{}'.format(result_name)
 
                 fig = plt.subplot(1, 3, 1)
                 fig = plt.imshow(io.imread(os.path.join(root, file_name)))

@@ -1,6 +1,6 @@
-from .base_index import BaseIndex
+from base_index import BaseIndex
 import json
-import http.client
+import httplib
 import re
 from base64 import b64encode
 
@@ -14,7 +14,7 @@ class ESIndex():
 		self.counter = 1 # Document ID
 		self.doc_buffer = [] # Hold documents until threshold is reached or persist_index() is called
 		self.DOC_THRESHOLD = threshold # The amount of documents required to trigger the indexing
-		self.connection = http.client.HTTPConnection(self.URL)
+		self.connection = httplib.HTTPConnection(self.URL)
 		self.connection.close()
 	# Stores a document in the buffer
 	# When a certain threshold is met, indexes them all at once
@@ -28,14 +28,14 @@ class ESIndex():
 	# Does the actual indexing
 	def index_docs(self):
 		
-		self.connection = http.client.HTTPConnection(self.URL)
+		self.connection = httplib.HTTPConnection(self.URL)
 		for doc in self.doc_buffer:
 			# Index data
 
 			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "cnn_basic" : doc["cnn_basic"], "hist_basic" : doc["hist_basic"], "cnn_hist" : doc["cnn_hist"]}), { "Content-Type" : "application/json", "Authorization" : "Basic " + auth })
 			# Retrieve response for debug, could be relevant to use for error handling
 			response = json.loads(self.connection.getresponse().read().decode())
-			print(response)
+			print response
 			self.counter += 1
 
 		self.connection.close()
@@ -75,7 +75,7 @@ class ESIndex():
 
 		#print query_string
 
-		self.connection = http.client.HTTPConnection(self.URL)
+		self.connection = httplib.HTTPConnection(self.URL)
 		auth = b64encode(b"elastic:changeme").decode("ascii")
 		
 		# Submit the search query to ES
@@ -83,8 +83,8 @@ class ESIndex():
 
 		# Retrieve response
 		response = json.loads(self.connection.getresponse().read().decode())
-		print('HALLOOOOOOOOOO')
-		print(response)
+		print 'HALLOOOOOOOOOO'
+		print response
 		
 		self.connection.close()
 		return response

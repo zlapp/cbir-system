@@ -1,8 +1,8 @@
-
+from __future__ import absolute_import
 
 import os
 import numpy as np
-import pickle as pickle
+import cPickle as pickle
 
 
 from src.indexes.base_index import BaseIndex
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     mem_index.insert_document(doc_3)
     mem_index.insert_document(doc_4)
 
-    print(mem_index.query_index(doc_test, 'euclidean', 'cnn_basic'))
+    print mem_index.query_index(doc_test, 'euclidean', 'cnn_basic')
 
 
 

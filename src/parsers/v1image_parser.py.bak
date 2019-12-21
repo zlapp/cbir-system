@@ -1,4 +1,4 @@
-
+from __future__ import division
 
 import numpy as np
 from .base_parser import BaseParser
@@ -37,7 +37,7 @@ class V1ImageParser(BaseParser):
 
         # compute intermediate feature map histograms
         cnn_hist = np.array([])
-        for layer_ix in range(cnn_convs.shape[0]):
+        for layer_ix in xrange(cnn_convs.shape[0]):
             feat_maps = cnn_convs[layer_ix]
             feat_maps_scaled = (feat_maps - feat_maps.min(axis=2, keepdims=True)) / (
                 feat_maps.max(axis=2, keepdims=True) - feat_maps.min(axis=2, keepdims=True))

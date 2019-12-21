@@ -1,7 +1,7 @@
-
+from __future__ import absolute_import
 
 import datetime
-import pickle as pickle
+import cPickle as pickle
 
 from src.indexes.base_index import BaseIndex
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     file_index.persist_index()
 
-    print(file_index.query_index(doc_test, ''))
+    print file_index.query_index(doc_test, '')
 
 
 

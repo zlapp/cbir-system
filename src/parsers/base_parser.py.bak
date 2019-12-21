@@ -1,10 +1,11 @@
 import abc
 
 
-class BaseParser(object, metaclass=abc.ABCMeta):
+class BaseParser(object):
     """
      Class that handles extracting all types of features from the images
      """
+    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def prepare_query(self, query_image):
