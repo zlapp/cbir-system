@@ -1,3 +1,5 @@
+import logging
+import sys
 from .base_index import BaseIndex
 import json
 import http.client
@@ -7,6 +9,9 @@ from base64 import b64encode
 INDEX_PATH = "/image/"
 
 auth = b64encode(b"elastic:changeme").decode("ascii")
+
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 class ESIndex():
 	def __init__(self, url, threshold=500):
@@ -73,7 +78,7 @@ class ESIndex():
 		# Put together query string
 		query_string = json.JSONEncoder().encode(tmpdict)
 
-		#print query_string
+		logging.info("Query string"+str(query_string))
 
 		self.connection = http.client.HTTPConnection(self.URL)
 		auth = b64encode(b"elastic:changeme").decode("ascii")
@@ -83,8 +88,8 @@ class ESIndex():
 
 		# Retrieve response
 		response = json.loads(self.connection.getresponse().read().decode())
-		print('HALLOOOOOOOOOO')
-		print(response)
+		logging.info('Elastic Search responeded with:')
+		logging.info(response)
 		
 		self.connection.close()
 		return response
