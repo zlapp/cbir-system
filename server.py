@@ -14,9 +14,9 @@ DATA_PATH = 'https://s3.eu-central-1.amazonaws.com/kth-mir/mirflickr/'
 
 parser = v1image_parser.V1ImageParser()
 
-index = es_index.ESIndex('elasticsearch:9200')
+indexer = es_index.ESIndex('elasticsearch:9200')
 
-# index = mem_index.MemoryIndex('/app/data/v1_parsed.p1')
+# indexer = mem_index.MemoryIndex('/app/data/v1_parsed.p1')
 
 PORT = 8081
 
@@ -57,7 +57,7 @@ def search():
     query_dict = {'doc_name': None, 'features': query}
 
     logging.info("Dispatching query")
-    query_response = index.query_index(
+    query_response = indexer.query_index(
         query_dict, evaluation, feature)[:25]
 
     return jsonify({'images': query_response, 'data_path': DATA_PATH})
@@ -67,3 +67,4 @@ if __name__ == '__main__':
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     logging.debug('flask app debug logging enabled')
     app.run(host='0.0.0.0', port=PORT, debug=True)
+
