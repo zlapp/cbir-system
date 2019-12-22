@@ -1,7 +1,8 @@
 import abc
 
 
-class BaseParser(object, metaclass=abc.ABCMeta):
+class BaseParser:
+    __metaclass__=abc.ABCMeta
     """
      Class that handles extracting all types of features from the images
      """
