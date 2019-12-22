@@ -12,27 +12,26 @@ import torchvision
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+logging.info("Using torch device "+str(device)) 
 
-def pil2tensor(image,dtype):
+def pil2tensor(image):
     "Convert PIL style `image` array to torch style image tensor."
     a = np.asarray(image)
     if a.ndim==2 : a = np.expand_dims(a,2)
-    a = np.transpose(a, (1, 0, 2))
-    a = np.transpose(a, (2, 1, 0))
-    return torch.from_numpy(a.astype(dtype, copy=False)).unsqueeze(dim=0)
+    a = np.transpose(a, (1, 0, 2)) 
+    a = np.transpose(a, (2, 1, 0)) 
 
-def image2np(image):
-    "Convert from torch style `image` to numpy/matplotlib style."
-    res = image.cpu().permute(1,2,0).numpy()
-    return res[...,0] if res.shape[2]==1 else res
+    return torch.tensor(torch.from_numpy(a).unsqueeze(dim=0), dtype=torch.double, device=device)
 
+ 
 class CNNExtractor(BaseExtractor):
     """ Class defines a ConvNet based feature extractor.
 
         The size of the output feature vector depends on the layer
         used as output of the network.
-    """
-
+    """ 
+ 
     def __init__(self, output_layers=('fc2',)):
         """
         Initialize ConvNet extractor.
@@ -42,20 +41,29 @@ class CNNExtractor(BaseExtractor):
         self._resize_dims = (224, 224)
         self._output_layers = output_layers
         self.model = self._initialize_model()
-
+ 
     def _initialize_model(self):
         model = torchvision.models.resnet18(pretrained=True)
-        model.eval()
+        
         # remove last fully-connected layer
         new_classifier = nn.Sequential(*list(model.children())[:-1])
         model.classifier = new_classifier
+        if torch.cuda.is_available():
+            model = model.cuda() 
+        else:
+            model = model.cpu() 
+        
+        for param in model.parameters():
+            param.requires_grad = False
+        model.eval()
+        model = model.float() 
         return model
 
     def _preprocess_image(self, image):
         # reshape input image if necessary
         if image.shape[:2] != self._resize_dims:
             image = transform.resize(image, self._resize_dims, preserve_range=True, mode='constant')
-        image = pil2tensor(image,torch.Double)
+        image = pil2tensor(image)
         return image
 
     def extract(self, image):
@@ -70,8 +78,8 @@ class CNNExtractor(BaseExtractor):
         image_proc = self._preprocess_image(image)
 
         # extract features
-        logging.info("Extracting features from image of size "+str(image_proc.size()))
-        image_feats = self.model(image_proc)
+        logging.info("Extracting features from image of size "+str(image_proc.size())+" of type "+str(image_proc.dtype))
+        image_feats = self.model(image_proc.double())
         logging.info("Extracted features of size "+str(image_feats.size()))
 
         return image_feats
