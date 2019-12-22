@@ -52,7 +52,7 @@ class CNNExtractor(BaseExtractor):
 
         if torch.cuda.is_available():
             model = model.cuda()
-        else: 
+        else:
             model = model.cpu()
 
         for param in model.parameters():
@@ -86,7 +86,7 @@ class CNNExtractor(BaseExtractor):
                      str(image_proc.size())+" of type "+str(image_proc.dtype))
         image_feats = self.model(image_proc.double()).squeeze()
         logging.info("Extracted features of size "+str(image_feats.size()))
-        
+
         return image_feats
 
 
@@ -134,4 +134,3 @@ if __name__ == '__main__':
         plt.title('Result #3 (Sim: %.2f)' % sims[most_sim[-4]])
         plt.imshow(imgs[most_sim[-4]])
         plt.show()
-
