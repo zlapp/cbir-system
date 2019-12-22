@@ -1,5 +1,5 @@
-
-
+import logging
+import sys
 import os
 import numpy as np
 import pickle as pickle
@@ -8,6 +8,7 @@ import pickle as pickle
 from src.indexes.base_index import BaseIndex
 from src.similarity_measures.measures import *
 
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 class MemoryIndex(BaseIndex):
     """
@@ -46,6 +47,7 @@ class MemoryIndex(BaseIndex):
         return 0
 
     def query_index(self, query_dict, similarity, extractor, return_score=False):
+        logging.info('Querying index of size' + str(len(self._index)) + str(self._index))
         # get appropriate similarity measure
         similarity_fn, reverse_order = self._similarities[similarity]
 
