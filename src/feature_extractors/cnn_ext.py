@@ -55,7 +55,7 @@ class CNNExtractor(BaseExtractor):
         # reshape input image if necessary
         if image.shape[:2] != self._resize_dims:
             image = transform.resize(image, self._resize_dims, preserve_range=True, mode='constant')
-        image = pil2tensor(image,np.double)
+        image = pil2tensor(image,torch.Double)
         return image
 
     def extract(self, image):
@@ -66,12 +66,13 @@ class CNNExtractor(BaseExtractor):
         :return: a numpy array with features, dimensionality depends on class settings.
         """
         # preprocess image (reshaping, mean subtraction, etc.)
+        logging.info("Processing image")
         image_proc = self._preprocess_image(image)
 
         # extract features
-        logging.info("Extracting features from image of size"+str(image_feats.size()))
+        logging.info("Extracting features from image of size "+str(image_proc.size()))
         image_feats = self.model(image_proc)
-        logging.info("Extracted features of size"+str(image_feats.size()))
+        logging.info("Extracted features of size "+str(image_feats.size()))
 
         return image_feats
 
