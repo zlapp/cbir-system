@@ -1,3 +1,5 @@
+import sys
+import logging
 import numpy as np
 
 from src.feature_extractors.base_ext import BaseExtractor
@@ -6,6 +8,23 @@ from skimage import transform
 import torch
 from torch import nn
 import torchvision
+
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+
+def pil2tensor(image,dtype):
+    "Convert PIL style `image` array to torch style image tensor."
+    a = np.asarray(image)
+    if a.ndim==2 : a = np.expand_dims(a,2)
+    a = np.transpose(a, (1, 0, 2))
+    a = np.transpose(a, (2, 1, 0))
+    return torch.from_numpy(a.astype(dtype, copy=False)).unsqueeze(dim=0)
+
+def image2np(image):
+    "Convert from torch style `image` to numpy/matplotlib style."
+    res = image.cpu().permute(1,2,0).numpy()
+    return res[...,0] if res.shape[2]==1 else res
 
 class CNNExtractor(BaseExtractor):
     """ Class defines a ConvNet based feature extractor.
@@ -36,8 +55,8 @@ class CNNExtractor(BaseExtractor):
         # reshape input image if necessary
         if image.shape[:2] != self._resize_dims:
             image = transform.resize(image, self._resize_dims, preserve_range=True, mode='constant')
-        image = np.expand_dims(image, axis=0)
-        return torch.tensor(image)
+        image = pil2tensor(image,np.double)
+        return image
 
     def extract(self, image):
         """
@@ -50,9 +69,11 @@ class CNNExtractor(BaseExtractor):
         image_proc = self._preprocess_image(image)
 
         # extract features
+        logging.info("Extracting features from image of size"+str(image_feats.size()))
         image_feats = self.model(image_proc)
+        logging.info("Extracted features of size"+str(image_feats.size()))
 
-        return [feats[0] for feats in image_feats]
+        return image_feats
 
 
 if __name__ == '__main__':

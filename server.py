@@ -35,7 +35,8 @@ def index():
 
 @app.route('/search', methods=['POST'])
 def search():
-
+    logging.info("Handling search request")
+    
     data = request.get_json()
 
     img = data['image'].split(',', 1)[1]
