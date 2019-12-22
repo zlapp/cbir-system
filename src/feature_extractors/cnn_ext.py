@@ -48,18 +48,18 @@ class CNNExtractor(BaseExtractor):
         model = torchvision.models.resnet50(pretrained=True)
 
         # remove last fully-connected layer
-        model = nn.Sequential(*list(model.children())[:])
+        model = nn.Sequential(*list(model.children())[:-1])
 
         if torch.cuda.is_available():
             model = model.cuda()
-        else:
+        else: 
             model = model.cpu()
 
         for param in model.parameters():
             param.requires_grad = False
         model.eval()
         model = model.double()
-        logging.info(str(model))
+        # logging.info(str(model))
         return model
 
     def _preprocess_image(self, image):
@@ -84,10 +84,10 @@ class CNNExtractor(BaseExtractor):
         # extract features
         logging.info("Extracting features from image of size " +
                      str(image_proc.size())+" of type "+str(image_proc.dtype))
-        image_feats = self.model(image_proc.double())
+        image_feats = self.model(image_proc.double()).squeeze()
         logging.info("Extracted features of size "+str(image_feats.size()))
-
-        return image_feats.squeeze()
+        
+        return image_feats
 
 
 if __name__ == '__main__':
@@ -134,3 +134,4 @@ if __name__ == '__main__':
         plt.title('Result #3 (Sim: %.2f)' % sims[most_sim[-4]])
         plt.imshow(imgs[most_sim[-4]])
         plt.show()
+
