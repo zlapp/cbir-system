@@ -40,6 +40,8 @@ services:
       context: ./
       dockerfile: ./scripts/Dockerfile
     container_name: indexer
+    depends_on:
+      - "elasticsearch"
     networks:
       - esnet
 

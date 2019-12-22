@@ -1,8 +1,9 @@
-FROM alpine:3.7
+FROM pytorch/pytorch
 
-RUN apk --update add python py-pip openssl ca-certificates
-RUN apk --update add --virtual build-dependencies python-dev build-base wget \
-  && apk del build-dependencies
+
+ADD requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt
 
 ADD ./scripts/index_data.py index_data.py
 ADD ./src src
