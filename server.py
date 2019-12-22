@@ -56,10 +56,10 @@ def search():
 
     query_dict = {'doc_name': None, 'features': query}
 
-    logging.info("Dispatching query")
+    logging.info("Dispatching query "+str(query_dict))
     query_response = indexer.query_index(
         query_dict, evaluation, feature)[:25]
-
+    logging.info("Completed query" + str(query_response))
     return jsonify({'images': query_response, 'data_path': DATA_PATH})
 
 
