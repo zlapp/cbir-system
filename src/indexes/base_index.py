@@ -1,7 +1,8 @@
 import abc
 
 
-class BaseIndex(object, metaclass=abc.ABCMeta):
+class BaseIndex:
+    __metaclass__=abc.ABCMeta
     """
     Class that is a persistent index
     """
