@@ -31,30 +31,10 @@ class V1ImageParser(BaseParser):
         cnn_features = self._cnn_ext.extract(image)
         hist_features = self._hist_ext.extract(image)
 
-        # split conv net feature layers
-        cnn_convs = np.array(cnn_features[:-1])
-        cnn_fc = np.array(cnn_features[-1])
-
-        # compute intermediate feature map histograms
-        cnn_hist = np.array([])
-        for layer_ix in range(cnn_convs.shape[0]):
-            feat_maps = cnn_convs[layer_ix]
-            feat_maps_scaled = (feat_maps - feat_maps.min(axis=2, keepdims=True)) / (
-                feat_maps.max(axis=2, keepdims=True) - feat_maps.min(axis=2, keepdims=True))
-            feat_maps_scaled[np.isnan(feat_maps_scaled)] = 0.
-            feat_maps_hist = np.array(
-                [np.histogram(feat_maps_scaled[:, :, ch], bins=3, range=[0., 1.])[0] for ch in
-                 range(feat_maps_scaled.shape[2])], dtype=np.float32)
-            feat_maps_hist /= feat_maps_hist.sum(axis=1, keepdims=True)
-            cnn_hist = np.hstack((cnn_hist, feat_maps_hist.reshape(-1)))
-
         # scale vectors
         hist_features /= np.sum(hist_features, keepdims=True)
-        cnn_hist /= np.sum(cnn_hist, keepdims=True)
-        cnn_fc /= np.linalg.norm(cnn_fc, keepdims=True)
 
-        return {'cnn_basic': cnn_fc.tolist(), 'hist_basic': hist_features.tolist(),
-                'cnn_hist': cnn_hist.tolist()}
+        return {'cnn_basic': cnn_features.tolist(), 'hist_basic': hist_features.tolist(), 'cnn_hist':[]}
 
     def prepare_query(self, query_image):
         """
