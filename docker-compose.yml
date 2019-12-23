@@ -21,22 +21,17 @@ services:
       - '.:/app'
     networks:
       - images
-      - esnet
   
   indexer:
     build:
       context: ./
       dockerfile: ./scripts/Dockerfile
     container_name: indexer
-    networks:
-      - esnet
 
 volumes:
   esdata:
     driver: local
 
 networks:
-  esnet:
-    driver: bridge
   images:
   
