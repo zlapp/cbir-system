@@ -21,6 +21,7 @@ class AnnoyIndex(BaseIndex):
         :param index_field:
         :param index_path:
         """
+        logging.info("Initializing AnnoyIndex class")
         self._index_path = index_path
         self._index = self._initialize_index()
         self._count=0

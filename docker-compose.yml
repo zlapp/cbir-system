@@ -23,32 +23,11 @@ services:
       - images
       - esnet
   
-  elasticsearch:
-    build:
-      context: ./
-      dockerfile: Dockerfile-elastic
-    ports:
-      - '9200:9200'
-    container_name: elasticsearch
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-    networks:
-      - esnet
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.5.1
-    ports:
-      - "5601:5601"
-    networks:
-      - esnet  
-  
   indexer:
     build:
       context: ./
       dockerfile: ./scripts/Dockerfile
     container_name: indexer
-    depends_on:
-      - "elasticsearch"
     networks:
       - esnet
 
@@ -61,26 +40,3 @@ networks:
     driver: bridge
   images:
   
-
-  # elasticsearch:
-  #   build: 
-  #     context: ./
-  #     dockerfile: Dockerfile-elastic
-  #   environment:
-  #     - cluster.name=demo-es
-  #     - discovery.type=single-node
-  #     - http.cors.enabled=true
-  #     - http.cors.allow-credentials=true
-  #     - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
-  #     - http.cors.allow-origin=/https?:\/\/localhost(:[0-9]+)?/
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
-  #   ports:
-  #     - "9200:9200"
-  #   container_name: elasticsearch
-  #   networks:
-  #     - esnet
-

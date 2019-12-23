@@ -34,7 +34,7 @@ class V1ImageParser(BaseParser):
         # scale vectors
         hist_features /= np.sum(hist_features, keepdims=True)
 
-        return {'cnn_basic': cnn_features.tolist(), 'hist_basic': hist_features.tolist(), 'cnn_hist':[]}
+        return {'cnn_basic': cnn_features.tolist(), 'hist_basic': hist_features.tolist(), 'cnn_hist':cnn_features.tolist()+hist_features.tolist()}
 
     def prepare_query(self, query_image):
         """
